@@ -9,12 +9,9 @@
     "build/**/*",
     "README.md"
   ],
+  "packageManager": "pnpm@10.x.x",
   "scripts": {
-    "build": "tsc --build --force",
-    "build:clean": "rm -rf build && npm run build",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run build:clean",
-    "prepack": "npm run build:clean"
+    "build": "tsc --build"
   },
   "repository": {
     "type": "git",

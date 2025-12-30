@@ -1,0 +1,42 @@
+{
+  "name": "anchor-events-gen",
+  "version": "1.0.0",
+  "description": "Generate TypeScript event types from Anchor IDL files",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc --build --force",
+    "build:clean": "rm -rf build && npm run build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build:clean",
+    "prepack": "npm run build:clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nirvana-sid/anchor-events-gen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nirvana-sid/anchor-events-gen/issues"
+  },
+  "homepage": "https://github.com/nirvana-sid/anchor-events-gen#readme",
+  "keywords": [
+    "anchor",
+    "solana",
+    "idl",
+    "codegen"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "ts-node": "^10.9.2",
+    "typescript": "5.5.4"
+  }
+}

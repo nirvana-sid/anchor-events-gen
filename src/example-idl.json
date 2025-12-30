@@ -1,0 +1,1434 @@
+{
+  "version": "2025.12.30",
+  "name": "samsara",
+  "instructions": [],
+  "accounts": [],
+  "types": [
+    {
+      "name": "InitMarketArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "gov",
+            "type": {
+              "defined": "GovInitArgs"
+            }
+          },
+          {
+            "name": "x2",
+            "type": "u64"
+          },
+          {
+            "name": "m2",
+            "type": {
+              "defined": "DecimalSerialized"
+            }
+          },
+          {
+            "name": "m1",
+            "type": {
+              "defined": "DecimalSerialized"
+            }
+          },
+          {
+            "name": "f",
+            "type": {
+              "defined": "DecimalSerialized"
+            }
+          },
+          {
+            "name": "b2",
+            "type": {
+              "defined": "DecimalSerialized"
+            }
+          },
+          {
+            "name": "startTime",
+            "type": "u64"
+          },
+          {
+            "name": "platformFeeMicroBasisPoints",
+            "docs": ["Share of revenue that goes to platform"],
+            "type": "u32"
+          },
+          {
+            "name": "excessLiquidityFloorRaiseRatioMicroBasisPoints",
+            "docs": [
+              "How much the floor will be increased from excess liquidity",
+              "Treated as a ratio of the current floor"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "excessLiquidityFloorRaiseCooldownSeconds",
+            "docs": ["Cooldown for how long the excess liquidity can be used to raise the floor"],
+            "type": "u32"
+          },
+          {
+            "name": "floorRaiseLiquidityToleranceLamports",
+            "docs": ["Tolerance for how much the area under the curve can shrink when the floor is raised"],
+            "type": "u64"
+          },
+          {
+            "name": "dutchConfigInitBoost",
+            "type": "f64"
+          },
+          {
+            "name": "dutchConfigDuration",
+            "type": "u32"
+          },
+          {
+            "name": "dutchConfigCurvature",
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitTenantArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mayflowerTenant",
+            "type": "publicKey"
+          },
+          {
+            "name": "tallyCooldownSeconds",
+            "type": "u32"
+          },
+          {
+            "name": "votesChangeBufferSeconds",
+            "type": "u32"
+          },
+          {
+            "name": "mintPrana",
+            "type": "publicKey"
+          },
+          {
+            "name": "admin",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaiseFloorPreserveAreaArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxNewFloor",
+            "docs": ["The maximum new floor price"],
+            "type": {
+              "defined": "DecimalSerialized"
+            }
+          },
+          {
+            "name": "newShoulderEnd",
+            "docs": ["The new shoulder end"],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetVotesArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newBallot",
+            "type": {
+              "defined": "PersonalBallot"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecimalSerialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "x",
+            "type": {
+              "array": ["u8", 16]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalBallot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyFeeMicroBasisPoints",
+            "docs": ["Fee for buying"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "sellFeeMicroBasisPoints",
+            "docs": ["Fee for selling"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "borrowFeeMicroBasisPoints",
+            "docs": ["Fee for borrowing"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseCooldownSeconds",
+            "docs": ["Cooldown for floor raise"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseLiquidityBufferMicroBasisPoints",
+            "docs": ["Liquidity buffer for floor raise"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "floorInvestmentMicroBasisPoints",
+            "docs": ["Floor investment share of revenue"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "priceCurveSensitivity",
+            "docs": ["Price curve sensitivity"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseIncreaseRatioMicroBasisPoints",
+            "docs": ["Increase ratio for floor raise"],
+            "type": {
+              "defined": "PersonalBallotItem"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PersonalBallotItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "votes",
+            "type": "u64"
+          },
+          {
+            "name": "isUp",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Gov",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "priceCurveSensitivity",
+            "docs": [
+              "Price curve sensitivity",
+              "There is not a \"value\" for price curve sensitivity, so we use a simple ballot item"
+            ],
+            "type": {
+              "defined": "SimpleGlobalBallotItem"
+            }
+          },
+          {
+            "name": "priceCurveSensitivityChangeRateMicroBasisPoints",
+            "docs": ["Change rate for price curve sensitivity"],
+            "type": "u32"
+          },
+          {
+            "name": "buyFeeMicroBasisPoints",
+            "docs": ["Fee for buying"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "sellFeeMicroBasisPoints",
+            "docs": ["Fee for selling"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "borrowFeeMicroBasisPoints",
+            "docs": ["Fee for borrowing"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseCooldownSeconds",
+            "docs": ["Cooldown for floor raise"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseLiquidityBufferMicroBasisPoints",
+            "docs": ["Liquidity buffer for floor raise"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "floorInvestmentMicroBasisPoints",
+            "docs": ["Floor investment share of revenue"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          },
+          {
+            "name": "floorRaiseIncreaseRatioMicroBasisPoints",
+            "docs": ["Increase ratio for floor raise"],
+            "type": {
+              "defined": "GlobalBallotItem"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GovInitArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyFeeMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "sellFeeMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "borrowFeeMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "floorRaiseCooldownSeconds",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "floorRaiseLiquidityBufferMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "floorInvestmentMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "floorRaiseIncreaseRatioMicroBasisPoints",
+            "type": {
+              "defined": "GlobalBallotItemInitArgs"
+            }
+          },
+          {
+            "name": "priceCurveSensitivityChangeRateMicroBasisPoints",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SimpleGlobalBallotItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalVotesUp",
+            "type": "u64"
+          },
+          {
+            "name": "totalVotesDown",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalBallotItem",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u32"
+          },
+          {
+            "name": "min",
+            "docs": ["Minimum value (clamped inclusive)"],
+            "type": "u32"
+          },
+          {
+            "name": "max",
+            "docs": ["Maximum value (clamped inclusive)"],
+            "type": "u32"
+          },
+          {
+            "name": "stepAmount",
+            "docs": ["change amount in micro basis points", "absolute change amount"],
+            "type": "u32"
+          },
+          {
+            "name": "totalVotesUp",
+            "docs": ["Total votes up"],
+            "type": "u64"
+          },
+          {
+            "name": "totalVotesDown",
+            "docs": ["Total votes down"],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalBallotItemInitArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u32"
+          },
+          {
+            "name": "min",
+            "type": "u32"
+          },
+          {
+            "name": "max",
+            "type": "u32"
+          },
+          {
+            "name": "stepAmount",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LevelRevCalculator",
+      "docs": ["A sigmoid curve that starts at the y-intercept and asymptotes to the max_asymptote"],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "yIntercept",
+            "docs": ["y-intercept of the curve"],
+            "type": "f64"
+          },
+          {
+            "name": "maxAsymptote",
+            "docs": ["high asymptote of the curve"],
+            "type": "f64"
+          },
+          {
+            "name": "k",
+            "docs": ["sensitivity of the curve"],
+            "type": "f64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Revenue",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "type": {
+              "array": ["u8", 16]
+            }
+          },
+          {
+            "name": "totalShares",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RevenueSplits",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "prana",
+            "docs": ["Revenue amount for prana"],
+            "type": "u64"
+          },
+          {
+            "name": "floor",
+            "docs": ["Revenue amount for floor"],
+            "type": "u64"
+          },
+          {
+            "name": "platform",
+            "docs": ["Revenue amount for platform"],
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "BorrowEvent",
+      "docs": [
+        "Event emitted when a user borrows cash from the market",
+        "This event is emitted when a user borrows cash from the market"
+      ],
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountBorrowedGross",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount borrowed (gross)"]
+        },
+        {
+          "name": "amountBorrowedNet",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount borrowed (net, after fees)"]
+        },
+        {
+          "name": "newDebt",
+          "type": "u64",
+          "index": false,
+          "docs": ["New debt after borrowing"]
+        },
+        {
+          "name": "depositedZenBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["Current deposited zen balance"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "currentMarketPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["Current market price of the zen token"]
+        },
+        {
+          "name": "revSplit",
+          "type": {
+            "defined": "RevenueSplits"
+          },
+          "index": false,
+          "docs": ["Revenue split"]
+        }
+      ]
+    },
+    {
+      "name": "BuyWithExactCashInAndDepositEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "buyer",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the buyer - (permissionless, could be anyone)"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "netCashSpent",
+          "type": "u64",
+          "index": false,
+          "docs": ["Net cash spent (after fees)"]
+        },
+        {
+          "name": "totalFeesOnCashIn",
+          "type": "u64",
+          "index": false,
+          "docs": ["Total fees on cash in"]
+        },
+        {
+          "name": "actualZenBought",
+          "type": "u64",
+          "index": false,
+          "docs": ["Actual amount of zen bought (after fees)"]
+        },
+        {
+          "name": "newDepositedZenBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total collateral after buying"]
+        },
+        {
+          "name": "debt",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of cash debt (unchanged from buying)"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "revSplit",
+          "type": {
+            "defined": "RevenueSplits"
+          },
+          "index": false,
+          "docs": ["Revenue split"]
+        },
+        {
+          "name": "newPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["New market price after buying"]
+        }
+      ]
+    },
+    {
+      "name": "CollectRevPranaEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "govAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the gov account"]
+        },
+        {
+          "name": "govAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the gov account"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountRevCollected",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of revenue collected"]
+        }
+      ]
+    },
+    {
+      "name": "DepositPranaEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "depositor",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the depositor", "Permissionless - could be anyone"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountDeposited",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount prANA deposited"]
+        },
+        {
+          "name": "newDepositedPranaBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total prANA balance after depositing"]
+        },
+        {
+          "name": "govAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the gov account"]
+        },
+        {
+          "name": "govAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the gov account"]
+        },
+        {
+          "name": "stagedRevFromPrana",
+          "type": "u64",
+          "index": false,
+          "docs": ["Current staged revenue from prANA"]
+        },
+        {
+          "name": "newGlobalMarketPranaDeposited",
+          "type": "u64",
+          "index": false,
+          "docs": ["Global total prANA deposited into the market"]
+        }
+      ]
+    },
+    {
+      "name": "DepositZenEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "depositor",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the depositor", "Permissionless - could be anyone"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountDeposited",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount deposited"]
+        },
+        {
+          "name": "newDepositedZenBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total collateral after depositing"]
+        },
+        {
+          "name": "debt",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of debt cash"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "currentMarketPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "EventDistributeRev",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "revSplit",
+          "type": {
+            "defined": "RevenueSplits"
+          },
+          "index": false,
+          "docs": ["Revenue split"]
+        }
+      ]
+    },
+    {
+      "name": "InitGovAccountEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "ownerAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the gov account"]
+        },
+        {
+          "name": "samsaraMarketAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "govAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the gov account"]
+        },
+        {
+          "name": "pranaEscrowAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the prana escrow"]
+        }
+      ]
+    },
+    {
+      "name": "InitPersonalAccountEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "ownerAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "samsaraMarketAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "mayPersonalPositionAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the mayflower personal position"]
+        }
+      ]
+    },
+    {
+      "name": "MintOptionsEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "payer",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the payer"]
+        },
+        {
+          "name": "admin",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the admin"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountMinted",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of karma minted"]
+        }
+      ]
+    },
+    {
+      "name": "RaiseFloorFromExcessLiquidityEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Market that raised the floor"]
+        },
+        {
+          "name": "newFloor",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["New floor price"]
+        },
+        {
+          "name": "prevFloor",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false
+        },
+        {
+          "name": "newAreaUnderCurve",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "prevAreaUnderCurve",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "totalLiquidity",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RaiseFloorPreserveAreaEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Market that raised the floor"]
+        },
+        {
+          "name": "newFloor",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["New floor price"]
+        },
+        {
+          "name": "newShoulderEnd",
+          "type": "u64",
+          "index": false,
+          "docs": ["New shoulder end"]
+        },
+        {
+          "name": "level",
+          "type": "u32",
+          "index": false,
+          "docs": ["New level"]
+        }
+      ]
+    },
+    {
+      "name": "RepayEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "repayer",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the repayer (permissionless - could be anyone)"]
+        },
+        {
+          "name": "amountRepaid",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount repaid"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "newDebt",
+          "type": "u64",
+          "index": false,
+          "docs": ["New debt after repaying"]
+        },
+        {
+          "name": "depositedZenBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of zen tokens deposited as collateral (unchanged from repaying)"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "currentMarketPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["Current market price of the zen token"]
+        }
+      ]
+    },
+    {
+      "name": "SellWithExactTokenInAfterWithdrawEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Samsara market"]
+        },
+        {
+          "name": "zenTokensSold",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of tokens sold"]
+        },
+        {
+          "name": "netCashOut",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of cash received (net of fees)"]
+        },
+        {
+          "name": "totalFeesOnCashOut",
+          "type": "u64",
+          "index": false,
+          "docs": ["Total fees on cash out"]
+        },
+        {
+          "name": "newDepositedZenBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total collateral after selling"]
+        },
+        {
+          "name": "debt",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of debt cash (unchanged from selling)"]
+        },
+        {
+          "name": "revSplit",
+          "type": {
+            "defined": "RevenueSplits"
+          },
+          "index": false,
+          "docs": ["Revenue split"]
+        },
+        {
+          "name": "newPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["New market price after selling"]
+        }
+      ]
+    },
+    {
+      "name": "SetVotesEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "govAccountOwner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "govAccountAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "newBallot",
+          "type": {
+            "defined": "PersonalBallot"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "TallyVotesEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the market"]
+        },
+        {
+          "name": "tallyEpoch",
+          "type": "u32",
+          "index": false,
+          "docs": ["The tally epoch this market was tallied in"]
+        },
+        {
+          "name": "tallyTimestamp",
+          "type": "u64",
+          "index": false,
+          "docs": ["The synchronized tally timestamp for this epoch"]
+        },
+        {
+          "name": "priceCurveSensitivityGoingUp",
+          "type": "bool",
+          "index": false,
+          "docs": ["Whether the price curve is going up"]
+        },
+        {
+          "name": "priceCurveChanged",
+          "type": "bool",
+          "index": false,
+          "docs": ["Whether the price curve changed"]
+        },
+        {
+          "name": "buyFeeMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Buy fee in micro basis points"]
+        },
+        {
+          "name": "sellFeeMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Sell fee in micro basis points"]
+        },
+        {
+          "name": "borrowFeeMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Borrow fee in micro basis points"]
+        },
+        {
+          "name": "floorRaiseCooldownSeconds",
+          "type": "u32",
+          "index": false,
+          "docs": ["Floor raise cooldown seconds"]
+        },
+        {
+          "name": "floorRaiseLiquidityBufferMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Floor raise liquidity buffer in micro basis points"]
+        },
+        {
+          "name": "floorInvestmentMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Floor investment in micro basis points"]
+        },
+        {
+          "name": "floorRaiseIncreaseRatioMicroBasisPoints",
+          "type": "u32",
+          "index": false,
+          "docs": ["Floor raise increase ratio in micro basis points"]
+        }
+      ]
+    },
+    {
+      "name": "WithdrawPranaEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "govAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the gov account"]
+        },
+        {
+          "name": "govAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the gov account"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the samsara market"]
+        },
+        {
+          "name": "amountWithdrawn",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount prANA withdrawn"]
+        },
+        {
+          "name": "newDepositedPranaBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total prANA balance after withdrawing"]
+        },
+        {
+          "name": "stagedRevFromPrana",
+          "type": "u64",
+          "index": false,
+          "docs": ["Current staged revenue from prANA"]
+        },
+        {
+          "name": "newGlobalMarketPranaDeposited",
+          "type": "u64",
+          "index": false,
+          "docs": ["Global total prANA deposited into the market"]
+        }
+      ]
+    },
+    {
+      "name": "WithdrawZenEvent",
+      "fields": [
+        {
+          "name": "counter",
+          "type": "u64",
+          "index": false,
+          "docs": ["Counter for the event"]
+        },
+        {
+          "name": "personalAccountOwner",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Owner of the personal account"]
+        },
+        {
+          "name": "personalAccountAddress",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Address of the personal account"]
+        },
+        {
+          "name": "market",
+          "type": "publicKey",
+          "index": false,
+          "docs": ["Samsara market"]
+        },
+        {
+          "name": "amountWithdrawn",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount withdrawn"]
+        },
+        {
+          "name": "newDepositedBalance",
+          "type": "u64",
+          "index": false,
+          "docs": ["New total collateral after withdrawing"]
+        },
+        {
+          "name": "debt",
+          "type": "u64",
+          "index": false,
+          "docs": ["Amount of cash debt (unchanged from withdrawal)"]
+        },
+        {
+          "name": "currentMarketPrice",
+          "type": {
+            "defined": "DecimalSerialized"
+          },
+          "index": false,
+          "docs": ["Current market price of the zen token"]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "CannotSetVotes",
+      "msg": "cannot set votes in buffer period near voting"
+    },
+    {
+      "code": 6001,
+      "name": "TallyTooSoon",
+      "msg": "tally too soon"
+    },
+    {
+      "code": 6002,
+      "name": "InsufficientPrana",
+      "msg": "Insufficient prana"
+    },
+    {
+      "code": 6003,
+      "name": "FloorRaiseCooldownNotMet",
+      "msg": "Floor raise cooldown not met"
+    },
+    {
+      "code": 6004,
+      "name": "FloorRaiseFromExcessLiquidityCooldownNotMet",
+      "msg": "Floor raise from excess liquidity cooldown not met"
+    },
+    {
+      "code": 6005,
+      "name": "InsufficientVotePower",
+      "msg": "Insufficient vote power"
+    },
+    {
+      "code": 6006,
+      "name": "PranaBalanceMismatch",
+      "msg": "Prana balance mismatch"
+    }
+  ]
+}

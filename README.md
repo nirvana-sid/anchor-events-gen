@@ -4,10 +4,8 @@ Generate TypeScript event types from Anchor IDL files.
 
 ## Installation
 
-Install from GitHub using pnpm:
-
 ```bash
-pnpm add github:nirvana-sid/anchor-events-gen
+pnpm add @nirvana-tools/anchor-events-gen
 ```
 
 ## Usage

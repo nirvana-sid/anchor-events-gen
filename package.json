@@ -1,6 +1,6 @@
 {
   "name": "@nirvana-tools/anchor-events-gen",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Generate TypeScript event types from Anchor IDL files",
   "license": "MIT",
   "main": "build/index.js",
@@ -13,7 +13,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "clean": "rm -rf build",
-    "build": "tsc --build",
+    "build": "tsc",
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "publishConfig": {
